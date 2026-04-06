@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentSentry — 30-Day Launch Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #7b61ff;
+    --pink: #e91e8c;
+    --green: #1fdf07;
+    --orange: #ff5c00;
+    --teal: #3898fc;
+    --bg: #f7f6ff;
+    --surface: #ffffff;
+    --border: #e8e4ff;
+    --text: #0f0e1a;
+    --muted: #7a7590;
+    --faint: #f0eeff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-accent { height: 4px; background: linear-gradient(90deg, var(--purple), var(--pink), var(--teal), var(--green)); }
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo-chip {
+    width: 36px; height: 36px;
+    background: var(--purple);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .header-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+  .header-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .progress-wrap { margin-left: auto; text-align: right; }
+  .progress-count { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; color: var(--purple); line-height: 1; }
+  .progress-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .progress-bar-outer { width: 140px; height: 5px; background: var(--border); border-radius: 99px; margin-top: 6px; }
+  .progress-bar-inner { height: 5px; background: var(--purple); border-radius: 99px; transition: width .4s ease; }
+
+  /* ── Page container ── */
+  .page { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+
+  /* ── Week block ── */
+  .week-block { margin-bottom: 36px; }
+  .week-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .week-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 99px;
+    flex-shrink: 0;
+  }
+  .w1 { background: #ede9ff; color: var(--purple); }
+  .w2 { background: #fce9f5; color: var(--pink); }
+  .w3 { background: #e6f2ff; color: var(--teal); }
+  .w4 { background: #e8fce6; color: #0c9900; }
+  .week-title { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
+  .week-dates { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; margin-left: auto; }
+  .week-progress { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  /* ── Category label ── */
+  .cat-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin: 18px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cat-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── Task item ── */
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background .12s, border-color .12s;
+    margin-bottom: 5px;
+    user-select: none;
+    background: var(--surface);
+    border-color: var(--border);
+  }
+  .task:hover { border-color: var(--purple); background: var(--faint); }
+  .task.done { background: #f9f8ff; border-color: #e0dbff; }
+  .task.done .task-text { color: var(--muted); text-decoration: line-through; text-decoration-color: #bbb; }
+  .task.done .task-meta { color: #c0bcd8; }
+
+  .check {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+    background: #fff;
+  }
+  .task:hover .check { border-color: var(--purple); }
+  .task.done .check {
+    background: var(--purple);
+    border-color: var(--purple);
+  }
+  .check-svg { display: none; }
+  .task.done .check-svg { display: block; }
+
+  .task-body { flex: 1; min-width: 0; }
+  .task-text { font-size: 14px; font-weight: 500; line-height: 1.4; color: var(--text); }
+  .task-meta { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+
+  .task-tag {
+    display: inline-flex; align-items: center;
+    font-size: 10px; font-family: 'DM Mono', monospace;
+    padding: 2px 8px; border-radius: 99px;
+    margin-left: auto; flex-shrink: 0; align-self: flex-start; margin-top: 2px;
+  }
+  .tag-li { background: #e6f0ff; color: #1a5fcc; }
+  .tag-rd { background: #ffeee6; color: #cc3300; }
+  .tag-br { background: #e6f9e6; color: #007a00; }
+  .tag-co { background: #f5eeff; color: #6600cc; }
+  .tag-all { background: #f0f0f0; color: #555; }
+
+  /* ── Reset button ── */
+  .reset-btn {
+    display: block;
+    margin: 32px auto 0;
+    padding: 10px 24px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .reset-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+  /* ── Confetti overlay ── */
+  .done-banner {
+    display: none;
+    position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+    background: var(--purple); color: #fff;
+    padding: 12px 28px; border-radius: 99px;
+    font-size: 14px; font-weight: 600;
+    z-index: 999;
+    animation: popIn .3s ease;
+    box-shadow: 0 8px 30px rgba(123,97,255,.35);
+  }
+  @keyframes popIn { from { opacity:0; transform: translateX(-50%) scale(.85); } to { opacity:1; transform: translateX(-50%) scale(1); } }
+
+  /* ── Share tip ── */
+  .share-tip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px; color: var(--muted);
+  }
+  .share-tip strong { color: var(--text); }
+  .share-icon { font-size: 18px; flex-shrink: 0; }
+  .copy-btn {
+    margin-left: auto; flex-shrink: 0;
+    padding: 6px 14px;
+    background: var(--faint);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--purple);
+    cursor: pointer;
+    transition: all .12s;
+  }
+  .copy-btn:hover { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+  @media (max-width: 600px) {
+    .header-inner { flex-wrap: wrap; }
+    .progress-wrap { margin-left: 0; }
+    .week-dates { display: none; }
+    .task-tag { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="done-banner" id="done-banner">🎉 Week complete! Great work team.</div>
+
+<div class="header">
+  <div class="header-accent"></div>
+  <div class="header-inner">
+    <div class="logo-chip">AS</div>
+    <div>
+      <div class="header-title">AGENT SENTRY — 30-Day Launch Plan</div>
+      <div class="header-sub">Social presence · LinkedIn · Reddit · Communities · April 2026</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-count"><span id="done-count">0</span>/<span id="total-count">0</span></div>
+      <div class="progress-label">tasks complete</div>
+      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="share-tip">
+    <span class="share-icon">🔗</span>
+    <div><strong>Share this checklist</strong> — open this HTML file in a browser, then share the URL or send the file directly. Each person's progress is saved locally in their browser.</div>
+    <button class="copy-btn" onclick="copyLink()">Copy link</button>
+  </div>
+
+  <!-- ═══ WEEK 1 ═══ -->
+  <div class="week-block">
+    <div class="week-header">
+      <span class="week-pill w1">WEEK 1</span>
+      <span class="week-title">Set up everything</span>
+      <span class="week-dates">Days 1–7</span>
+    </div>
+
+    <div class="cat-label">LinkedIn — Company Page</div>
+    <div class="task" onclick="toggle(this)" data-id="w1-1">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Create LinkedIn Company Page for AgentSentry</div>
+        <div class="task-meta">Go to LinkedIn → Work grid icon → Create a Company Page. Use the playbook copy for all fields.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w1-2">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Upload company logo (300×300px) and banner image (1128×191px)</div>
+        <div class="task-meta">Use the exported JPG/PNG banner files. Logo should be the shield mark on a white background.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w1-3">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Fill in all company page fields — tagline, about, specialties, website, industry</div>
+        <div class="task-meta">All copy is ready in the Social Presence Playbook, Section 1. Paste verbatim.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+
+    <div class="cat-label">LinkedIn — Mani's Personal Profile</div>
+    <div class="task" onclick="toggle(this)" data-id="w1-4">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Update Mani's headline to founder framing</div>
+        <div class="task-meta">"Founder @ AgentSentry | Building AI governance infrastructure for the enterprise | EU AI Act & NIST AI RMF"</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w1-5">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Rewrite About / Summary section on personal profile</div>
+        <div class="task-meta">Use playbook Section 2 copy. Ends with: mani@agentsentry.io</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w1-6">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Upload personal banner (1584×396px) and link current position to AgentSentry company page</div>
+        <div class="task-meta">Both banner files are exported and ready. Make sure the company page is linked in current experience.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w1-7">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Add skills: AI Governance, Risk Management, Regulatory Compliance, Enterprise Software, LLM Security</div>
+        <div class="task-meta">Skills improve search discoverability for CISO and compliance buyer searches.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+
+    <div class="cat-label">Reddit Setup</div>
+    <div class="task" onclick="toggle(this)" data-id="w1-8">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Create Reddit account and r/AgentSentry subreddit</div>
+        <div class="task-meta">Set as Public. Use playbook Section 4 copy for description, rules, and welcome post.</div>
+      </div>
+      <span class="task-tag tag-rd">Reddit</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w1-9">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Publish 3 seed posts on r/AgentSentry to make it look active</div>
+        <div class="task-meta">[Changelog] product overview · [Governance Question] EU AI Act thread · [Resource] NIST AI RMF explainer</div>
+      </div>
+      <span class="task-tag tag-rd">Reddit</span>
+    </div>
+
+    <div class="cat-label">Handle & Account Claiming</div>
+    <div class="task" onclick="toggle(this)" data-id="w1-10">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Claim @AgentSentry handle on X/Twitter (even if not active yet)</div>
+        <div class="task-meta">Reserve now to prevent squatting. Don't need to post.</div>
+      </div>
+      <span class="task-tag tag-all">All</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w1-11">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Reserve github.com/agentsentry, youtube.com/@agentsentry, producthunt.com/@agentsentry</div>
+        <div class="task-meta">Takes 10 minutes. These prevent brand squatting and will be needed later.</div>
+      </div>
+      <span class="task-tag tag-all">All</span>
+    </div>
+
+    <div class="cat-label">First Content</div>
+    <div class="task" onclick="toggle(this)" data-id="w1-12">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Publish LinkedIn Post 1 — Founder announcement / origin story</div>
+        <div class="task-meta">Post from Mani's personal profile. Full copy in playbook Section 3, Post 1. Pin to Featured section after publishing.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w1-13">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Repost Post 1 to the AgentSentry Company Page</div>
+        <div class="task-meta">Always repost personal posts to the company page for double reach.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+  </div>
+
+  <!-- ═══ WEEK 2 ═══ -->
+  <div class="week-block">
+    <div class="week-header">
+      <span class="week-pill w2">WEEK 2</span>
+      <span class="week-title">Start posting & lurking</span>
+      <span class="week-dates">Days 8–14</span>
+    </div>
+
+    <div class="cat-label">LinkedIn Content</div>
+    <div class="task" onclick="toggle(this)" data-id="w2-1">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Publish LinkedIn Post 2 — EU AI Act regulatory explainer</div>
+        <div class="task-meta">Day 10–11. Full copy in playbook Section 3, Post 2. End with a question to drive comments.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w2-2">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Publish LinkedIn Post 3 — Policy Marketplace product post (with screenshot)</div>
+        <div class="task-meta">Day 13–14. Attach a screenshot of the Policy Marketplace UI. Full copy in playbook Section 3, Post 3.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w2-3">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Reply to every comment on Posts 1, 2 & 3 within 24 hours</div>
+        <div class="task-meta">Early engagement boosts algorithm reach significantly. Even short replies count.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+
+    <div class="cat-label">LinkedIn Network Building</div>
+    <div class="task" onclick="toggle(this)" data-id="w2-4">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Follow 30–50 relevant people: CISOs, Compliance Officers, AI governance researchers, EU AI Act commentators</div>
+        <div class="task-meta">Search "CISO", "Chief Compliance Officer", "AI governance", "EU AI Act" on LinkedIn. Follow, don't connect yet.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w2-5">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Join 5 LinkedIn Groups: "AI Ethics & Governance", "IAPP Privacy Professionals", "Compliance & Risk Management", "Enterprise AI Leaders", "CISO Community"</div>
+        <div class="task-meta">Don't post yet — observe and engage with existing discussions first.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+
+    <div class="cat-label">Reddit & Communities</div>
+    <div class="task" onclick="toggle(this)" data-id="w2-6">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Join and start lurking: r/AIPolicy, r/cybersecurity, r/PrivacyEngineering, r/MachineLearning</div>
+        <div class="task-meta">No promotion yet. Read top posts, understand the culture, upvote good content.</div>
+      </div>
+      <span class="task-tag tag-rd">Reddit</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w2-7">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Join Latent Space Discord and Hugging Face Discord</div>
+        <div class="task-meta">Find #ethics-and-governance and #regulation channels. Read, don't post yet.</div>
+      </div>
+      <span class="task-tag tag-br">Discord</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w2-8">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Leave 3–5 thoughtful comments on existing Reddit threads about AI governance or EU AI Act</div>
+        <div class="task-meta">No mention of AgentSentry. Just share knowledge and add value. Build karma and credibility first.</div>
+      </div>
+      <span class="task-tag tag-rd">Reddit</span>
+    </div>
+  </div>
+
+  <!-- ═══ WEEK 3 ═══ -->
+  <div class="week-block">
+    <div class="week-header">
+      <span class="week-pill w3">WEEK 3</span>
+      <span class="week-title">Build momentum</span>
+      <span class="week-dates">Days 15–21</span>
+    </div>
+
+    <div class="cat-label">LinkedIn Content</div>
+    <div class="task" onclick="toggle(this)" data-id="w3-1">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Publish LinkedIn Post 4 — Provocative POV: "We'll add governance once the agent is in production"</div>
+        <div class="task-meta">Day 17. Designed to spark debate. Full copy in playbook Section 3, Post 4. Have a response ready for pushback.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w3-2">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Publish LinkedIn Post 5 — NIST AI RMF plain-English explainer</div>
+        <div class="task-meta">Day 20. Educational content. Full copy in playbook Section 3, Post 5. Repost to all LinkedIn Groups you joined.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w3-3">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Connect with everyone who commented or reacted to Posts 1–4 (personalised note)</div>
+        <div class="task-meta">"Hi [name], saw you engaged with my post on AI governance — would love to connect."</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+
+    <div class="cat-label">Reddit — First Value Posts</div>
+    <div class="task" onclick="toggle(this)" data-id="w3-4">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Post a resource-style thread on r/AIPolicy — NIST AI RMF or EU AI Act summary (no product mention)</div>
+        <div class="task-meta">Purely educational. "Here's how NIST AI RMF maps to enterprise AI deployments." Share knowledge, build credibility.</div>
+      </div>
+      <span class="task-tag tag-rd">Reddit</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w3-5">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Post a governance question thread on r/cybersecurity about OWASP LLM Top 10 or prompt injection</div>
+        <div class="task-meta">Ask a genuine question. "How are security teams currently handling LLM prompt injection in enterprise deployments?"</div>
+      </div>
+      <span class="task-tag tag-rd">Reddit</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w3-6">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Contribute 3 more Reddit comments across r/AIPolicy, r/PrivacyEngineering, r/MachineLearning</div>
+        <div class="task-meta">Still no AgentSentry mentions. Reply to questions about AI compliance, regulatory mapping, AI agent risks.</div>
+      </div>
+      <span class="task-tag tag-rd">Reddit</span>
+    </div>
+
+    <div class="cat-label">Brand & Naming</div>
+    <div class="task" onclick="toggle(this)" data-id="w3-7">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Finalise brand name decision — check .com and .ai availability at instantdomainsearch.com</div>
+        <div class="task-meta">Top candidates: Guardrails, Agentlayer, Vigil.ai. Once chosen, update all handles and reserve domains immediately.</div>
+      </div>
+      <span class="task-tag tag-co">Brand</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w3-8">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Register chosen .com and .ai domains</div>
+        <div class="task-meta">Use Cloudflare Registrar for transparent pricing. Register both immediately once the name is confirmed.</div>
+      </div>
+      <span class="task-tag tag-co">Brand</span>
+    </div>
+  </div>
+
+  <!-- ═══ WEEK 4 ═══ -->
+  <div class="week-block">
+    <div class="week-header">
+      <span class="week-pill w4">WEEK 4</span>
+      <span class="week-title">Engage & convert</span>
+      <span class="week-dates">Days 22–30</span>
+    </div>
+
+    <div class="cat-label">LinkedIn Content</div>
+    <div class="task" onclick="toggle(this)" data-id="w4-1">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Publish LinkedIn Post 6 — Milestone update: 3 weeks in, what we've learned</div>
+        <div class="task-meta">Day 24–25. Fill in real conversation count. Full copy in playbook Section 3, Post 6.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w4-2">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">DM 10 highest-quality LinkedIn engagers — request a 20-min discovery call</div>
+        <div class="task-meta">"Hey [name] — thanks for engaging with my post on AI governance. Would love to get your perspective as [their role]. 20 mins?"</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w4-3">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Share Posts 4 & 5 into the LinkedIn Groups you joined — with a short intro comment</div>
+        <div class="task-meta">"Sharing this here as it's relevant to the group — happy to discuss in comments." Don't just drop a link.</div>
+      </div>
+      <span class="task-tag tag-li">LinkedIn</span>
+    </div>
+
+    <div class="cat-label">Reddit — First Organic Mentions</div>
+    <div class="task" onclick="toggle(this)" data-id="w4-4">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">If directly asked for a tool recommendation in a relevant thread — mention AgentSentry naturally</div>
+        <div class="task-meta">Only if genuinely relevant. "We've been building something for exactly this — happy to share more if useful." Never cold-pitch.</div>
+      </div>
+      <span class="task-tag tag-rd">Reddit</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w4-5">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Post an AMA-style thread on r/AgentSentry: "Ask me anything about AI agent governance"</div>
+        <div class="task-meta">Seed with 3–4 questions yourself if needed. This builds the community and surfaces real concerns from practitioners.</div>
+      </div>
+      <span class="task-tag tag-rd">Reddit</span>
+    </div>
+
+    <div class="cat-label">Measurement & Planning</div>
+    <div class="task" onclick="toggle(this)" data-id="w4-6">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Review LinkedIn analytics — which posts drove most profile visits, follows, DMs?</div>
+        <div class="task-meta">Go to your LinkedIn post analytics. Note top performer. Double down on that format in Month 2.</div>
+      </div>
+      <span class="task-tag tag-co">Analytics</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w4-7">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Track conversations started — log every discovery call or DM into a simple CRM or spreadsheet</div>
+        <div class="task-meta">Even a Google Sheet works. Name, role, company, date contacted, outcome. This is your first pipeline.</div>
+      </div>
+      <span class="task-tag tag-co">Analytics</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w4-8">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Plan Month 2 content calendar — schedule next 8 posts and decide on LinkedIn Newsletter launch</div>
+        <div class="task-meta">Consider weekly "AI Governance Radar" newsletter on LinkedIn. Builds subscribers and positions you as the authority.</div>
+      </div>
+      <span class="task-tag tag-co">Planning</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w4-9">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Research IAPP membership — evaluate joining for access to DPO and privacy officer community</div>
+        <div class="task-meta">iapp.org — ~$300/yr. Worth it once you have a demo-ready product to show. Book this for Month 2.</div>
+      </div>
+      <span class="task-tag tag-br">Network</span>
+    </div>
+    <div class="task" onclick="toggle(this)" data-id="w4-10">
+      <div class="check"><svg class="check-svg" width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="task-body">
+        <div class="task-text">Begin planning Product Hunt launch for Month 2 — find a hunter, prepare assets</div>
+        <div class="task-meta">A proper PH launch needs 2–3 weeks of prep. Start now: identify hunters with 1000+ followers in the AI space.</div>
+      </div>
+      <span class="task-tag tag-co">Planning</span>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetAll()">Reset all checkboxes</button>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'agentsentry_checklist_v1';
+
+function getState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+}
+
+function saveState(state) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function toggle(el) {
+  const id = el.dataset.id;
+  const state = getState();
+  const isDone = el.classList.toggle('done');
+  state[id] = isDone;
+  saveState(state);
+  updateProgress();
+}
+
+function updateProgress() {
+  const tasks = document.querySelectorAll('.task');
+  const done = document.querySelectorAll('.task.done');
+  const pct = tasks.length ? Math.round((done.length / tasks.length) * 100) : 0;
+  document.getElementById('done-count').textContent = done.length;
+  document.getElementById('total-count').textContent = tasks.length;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function resetAll() {
+  if (!confirm('Reset all checkboxes for your browser? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  document.querySelectorAll('.task').forEach(t => t.classList.remove('done'));
+  updateProgress();
+}
+
+function copyLink() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy link', 2000);
+  });
+}
+
+// Restore state on load
+function init() {
+  const state = getState();
+  document.querySelectorAll('.task').forEach(el => {
+    if (state[el.dataset.id]) el.classList.add('done');
+  });
+  updateProgress();
+}
+
+init();
+</script>
+</body>
+</html>

@@ -593,7 +593,6 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);pad
       var c=gc();if(c[wid])c[wid]=c[wid].filter(function(x){return x.id!==t.id;});sc(c);
       var s=gs();delete s[t.id];ss(s);prog();
     });
-    el.addEventListener('click',function(){toggleTask(el);});
     cont.appendChild(el);
     var s=gs();if(s[t.id])el.classList.add('done');
   }
